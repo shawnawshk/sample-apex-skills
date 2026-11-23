@@ -79,7 +79,7 @@ Role status, as of 2026-11-21: the eval role exists in the eval account. Its tru
 |---|---|---|
 | T1, T2, T3, T4, T6 | Model calls on Bedrock only; the prompts are offline (T1 and T4 say not to run aws or kubectl) | The eval-role session |
 | T5 | Model calls on Bedrock only | The eval-role session |
-| T7 | Model calls on Bedrock, plus read-only cluster and EKS API reads | The eval-role session (model calls only, see Role status above), and a session of the read-only role the kubeconfig's profile names, minted by the operator before T7 and read by the driver before each run (T7, above) |
+| T7 | Model calls on Bedrock, plus read-only cluster and EKS API reads | The eval-role session (model calls only, see Role status above), and a session of the read-only role the kubeconfig's profile names, minted by the operator before T7 and read by the driver before each run (T7, above). Only kubectl reaches the cluster on that session: inside the wall the subject's `aws` calls, EKS API reads included, run on the eval-role session, which has none of the live-eval read set (T7, above) |
 
 ## Run count
 
