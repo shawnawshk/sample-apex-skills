@@ -678,7 +678,8 @@ def main(argv: list[str] | None = None, runner: SimpleNamespace | None = None) -
                                                  "aws_access_key_id, aws_secret_access_key, aws_session_token and "
                                                  "expiration (the only keys used); the driver reads it before each T7 run and "
                                                  "never signs in itself, though the subject runs as your user and can "
-                                                 "still read your sign-in and ~/.aws by path (without it, a "
+                                                 "still reach your sign-in and ~/.aws (misc/runner-trial/cases.md, "
+                                                 "Credentials and permissions) (without it, a "
                                                  "kubeconfig whose exec runs aws with AWS_PROFILE reads 'cannot run')")
     args = p.parse_args(argv)
 
