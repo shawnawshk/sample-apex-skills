@@ -505,12 +505,13 @@ def live_env(kubeconfig: str, credentials: str | None, timeout: int):
     the real aws on the same session. PATH puts the shim first, but the dir
     sits under the temp dir the runner's bubblewrap wall hides, so inside
     the wall an `aws` the subject runs by name does not use that session
-    (when the real aws is installed outside HOME, the repo and the temp
-    dir, it runs the next `aws` on PATH on the eval-role session, else it is
-    not found); kubectl still uses it, carried in the kubeconfig's exec env,
-    through the runner's copy of the kubeconfig in the clean HOME, but that
-    exec runs `aws` by name too, so it needs the same real aws outside HOME,
-    the repo and the temp dir. The subject's AWS_* env stays the
+    (it runs the next `aws` on PATH visible inside the wall, one outside
+    HOME, the repo and the temp dir or under a bound harness CLI folder, on
+    the eval-role session; with none visible it is not found); a kubectl
+    visible inside the wall the same way still uses it, carried in the
+    kubeconfig's exec env, through the runner's copy of the kubeconfig in
+    the clean HOME, but that exec runs `aws` by name too, so it needs an
+    `aws` visible inside the wall as well. The subject's AWS_* env stays the
     eval-role session for its model calls. The role is the one
     the session was minted for and is not checked here: mint the read-only
     role. Any other kubeconfig (token, certificate, or one that does not
