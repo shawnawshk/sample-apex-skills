@@ -24,11 +24,16 @@ run that crosses the limit completes. The limit is per invocation.
 Paid runs use a separate eval account through the eval role
 apex-eval-bedrock-invoke (misc/evals/README.md, Eval-role setup); see
 cases.md, Credentials and permissions, for the eval role's status. The
-subject runs as your OS user with bypassPermissions, so it can read, write
-and run anything your user can, the runner's environment included (and on
-an EC2 host, the instance role through the metadata endpoint unless that is
-blocked); run it as another OS user or in a container for a hard fence
-(misc/evals/README.md, Eval-role setup).
+subject runs as your OS user with bypassPermissions inside the runner's
+bubblewrap wall (run_triggering.wall_off_host; misc/evals/README.md,
+Eval-role setup): your home directory, the repo and the temp directory read
+as empty, apart from the run's own sandbox, clean HOME and staged skill.
+The rest of the host filesystem and the network are unchanged, so it can
+still read and write, by path, what your user can elsewhere on the host
+(and on an EC2 host, reach the instance role through the metadata endpoint
+unless that is blocked). The grader runs outside the wall. Run it as
+another OS user (never root) or in a container for a hard fence
+(misc/website/docs/read-only-operating-profile.md).
 
 Output (--out): runs.jsonl, one line per run (case, arm, run, status, pass,
 tokens, duration_ms, wall_seconds, total_cost_usd, reason), summary.json
@@ -659,10 +664,12 @@ def main(argv: list[str] | None = None, runner: SimpleNamespace | None = None) -
         description="Drive runner-trial candidate C1 (misc/runner-trial/cases.md). Dry run by default: "
                     "prints the planned runs and makes no model call. --paid needs the eval-role session the "
                     "runner mints (misc/evals/README.md, Eval-role setup); the subject runs as your OS user "
-                    "with bypassPermissions, so it can read, write and run anything your user can, the "
-                    "runner's environment included (and on an EC2 host, the instance role through the "
-                    "metadata endpoint unless that is blocked); run it as another OS user or in a "
-                    "container for a hard fence (misc/evals/README.md, Eval-role setup).")
+                    "with bypassPermissions inside the runner's bubblewrap wall, where your home "
+                    "directory, the repo and the temp directory read as empty, but it can still read and "
+                    "write, by path, what your user can elsewhere on the host (and on an EC2 host, reach "
+                    "the instance role through the metadata endpoint unless that is blocked); the grader "
+                    "runs outside the wall; run it as another OS user (never root) or in a container for a "
+                    "hard fence (misc/website/docs/read-only-operating-profile.md).")
     p.add_argument("--out", type=Path, help="output dir, empty or new (required with --paid)")
     p.add_argument("--case", action="append", help="case id, repeatable (default: T1 to T7)")
     p.add_argument("--paid", action="store_true", help="start the runs (model calls, billed)")
